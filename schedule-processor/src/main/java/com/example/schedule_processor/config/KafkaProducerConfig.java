@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import com.example.schedule_processor.dto.ArrivalSchedule;
@@ -23,6 +24,13 @@ public class KafkaProducerConfig {
     private String bootstrapServers;
 
     public static final String TOPIC_SCHEDULES = "horarios";
+
+    @Bean
+    KafkaAdmin kafkaAdmin() {
+        Map<String, Object> configs = new HashMap<>();
+        configs.put("bootstrap.servers", bootstrapServers);
+        return new KafkaAdmin(configs);
+    }
 
     @Bean
     ProducerFactory<String, ArrivalSchedule> scheduleProducerFactory() {
@@ -42,6 +50,6 @@ public class KafkaProducerConfig {
 
     @Bean
     public NewTopic topicHorarios() {
-        return new NewTopic(TOPIC_SCHEDULES, 3, (short) 3);
+        return new NewTopic(TOPIC_SCHEDULES, 3, (short) 1);
     }
 }

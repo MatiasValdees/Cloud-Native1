@@ -38,7 +38,7 @@ public class KafkaProducerConfig {
 	NewTopic topicUbicaciones() {
 		Map<String, String> configs = new HashMap<>();
 		configs.put("retention.ms", "43200000");
-		return new NewTopic(TOPIC, 3, (short) 3).configs(configs);
+		return new NewTopic(TOPIC, 3, (short) 1).configs(configs);
 	}
 
 	@Bean

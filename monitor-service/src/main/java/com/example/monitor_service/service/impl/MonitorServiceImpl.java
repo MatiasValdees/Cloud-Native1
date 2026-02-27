@@ -1,5 +1,7 @@
 package com.example.monitor_service.service.impl;
 
+import com.example.monitor_service.entity.ConsolidatedSummary;
+import com.example.monitor_service.repository.SummaryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
@@ -18,6 +20,9 @@ public class MonitorServiceImpl implements MonitorService {
 
     @Autowired
     private MonitorRepository repository;
+
+    @Autowired
+    private SummaryRepository summaryRepository;
 
     @Override
     @KafkaListener(topics = "ubicaciones_vehiculos", groupId = "monitor-group")
@@ -51,18 +56,33 @@ public class MonitorServiceImpl implements MonitorService {
     }
 
     @Override
-    @Scheduled(fixedRate = 120000)
+    @Scheduled(fixedRate = 300000)
     public void printSummary() {
-        LocalDateTime lastTime = LocalDateTime.now().minusMinutes(2);
+        LocalDateTime lastTime = LocalDateTime.now().minusMinutes(5);
         List<MonitorRecord> records = repository.findByTimestampAfter(lastTime);
-        System.out.println("--- RESUMEN DE ÚLTIMOS 2 MINUTOS ---");
-        records.forEach(r -> {
-            if ("UBICACION".equals(r.getTipo())) {
-                System.out.println("Location: " + r.getPatente() + " [" + r.getLatitud() + "," + r.getLongitud() + "]");
-            } else {
-                System.out.println("Schedule: " + r.getPatente() + " arrival at " + r.getHorarioDeLlegada());
+        System.out.println("--- RESUMEN CONSOLIDADO (ÚLTIMOS 5 MINUTOS) ---");
+
+        java.util.Map<String, java.util.List<MonitorRecord>> grouped = records.stream()
+                .collect(java.util.stream.Collectors.groupingBy(MonitorRecord::getPatente));
+
+        grouped.forEach((patente, vehicleRecords) -> {
+            ConsolidatedSummary summary = new ConsolidatedSummary();
+            summary.setPatente(patente);
+
+            for (MonitorRecord r : vehicleRecords) {
+                if ("UBICACION".equals(r.getTipo())) {
+                    summary.setLatitud(r.getLatitud());
+                    summary.setLongitud(r.getLongitud());
+                } else if ("HORARIO".equals(r.getTipo())) {
+                    summary.setHorarioDeLlegada(r.getHorarioDeLlegada());
+                }
             }
+
+            summaryRepository.save(summary);
+            System.out.println("PERSISTIDO - Vehículo: " + patente +
+                    " | Llegada: " + (summary.getHorarioDeLlegada() != null ? summary.getHorarioDeLlegada() : "N/A") +
+                    " | Ubicación: [" + summary.getLatitud() + ", " + summary.getLongitud() + "]");
         });
-        System.out.println("--------------------------------");
+        System.out.println("----------------------------------------------");
     }
 }

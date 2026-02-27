@@ -1,4 +1,4 @@
-package main.java.com.example.location_producer.service.impl;
+package com.example.location_producer.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,7 +16,7 @@ public class MockLocationTask {
     private final Random random = new Random();
     private final String[] patentes = { "ABC-123", "XYZ-789", "JKL-456", "MNO-012" };
 
-    @Scheduled(fixedRate = 30000)
+    @Scheduled(fixedRate = 5000, initialDelay = 5000)
     public void sendMockLocation() {
         String patente = patentes[random.nextInt(patentes.length)];
         double latitud = -33.4 + (random.nextDouble() * 0.1);
