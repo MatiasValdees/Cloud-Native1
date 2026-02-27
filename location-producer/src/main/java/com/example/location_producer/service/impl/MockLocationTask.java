@@ -1,4 +1,4 @@
-package com.example.location_producer.service.impl;
+package main.java.com.example.location_producer.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
