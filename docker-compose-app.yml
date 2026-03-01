@@ -32,8 +32,6 @@ services:
     networks: [app-net]
     ports:
       - "8080:8080"
-    environment:
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_HOST_IP:-172.31.37.173}:29092,${KAFKA_HOST_IP:-172.31.37.173}:39092,${KAFKA_HOST_IP:-172.31.37.173}:49092
 
   schedule-processor:
     build:
@@ -42,8 +40,6 @@ services:
     networks: [app-net]
     ports:
       - "8081:8081"
-    environment:
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_HOST_IP:-172.31.37.173}:29092,${KAFKA_HOST_IP:-172.31.37.173}:39092,${KAFKA_HOST_IP:-172.31.37.173}:49092
 
   monitor-service:
     build:
@@ -53,9 +49,5 @@ services:
     ports:
       - "8082:8082"
     environment:
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_HOST_IP:-172.31.37.173}:29092,${KAFKA_HOST_IP:-172.31.37.173}:39092,${KAFKA_HOST_IP:-172.31.37.173}:49092
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/monitor_db?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
-      SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: password
     depends_on:
       - mysql
