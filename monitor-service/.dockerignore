@@ -1,0 +1,29 @@
+# Git
+.git
+.gitignore
+
+# Docker
+.dockerignore
+docker-compose*.yml
+docker-compose*.yaml
+
+# IDE / Editores
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Maven / Gradle builds locales (Evitar copiar builds del host al contenedor)
+target/
+build/
+.gradle/
+
+# Logs
+*.log
+logs/
+
+# Mac OS
+.DS_Store
+
+# Otros
+*.md

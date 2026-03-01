@@ -1,0 +1,63 @@
+version: '3.8'
+
+networks:
+  app-net:
+    driver: bridge
+
+volumes:
+  mysql-data:
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    networks: [app-net]
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: monitor_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  location-producer:
+    build:
+      context: ./location-producer
+    container_name: location-producer
+    networks: [app-net]
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_HOST_IP:-localhost}:29092,${KAFKA_HOST_IP:-localhost}:39092,${KAFKA_HOST_IP:-localhost}:49092
+
+  schedule-processor:
+    build:
+      context: ./schedule-processor
+    container_name: schedule-processor
+    networks: [app-net]
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_HOST_IP:-localhost}:29092,${KAFKA_HOST_IP:-localhost}:39092,${KAFKA_HOST_IP:-localhost}:49092
+
+  monitor-service:
+    build:
+      context: ./monitor-service
+    container_name: monitor-service
+    networks: [app-net]
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_HOST_IP:-localhost}:29092,${KAFKA_HOST_IP:-localhost}:39092,${KAFKA_HOST_IP:-localhost}:49092
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/monitor_db?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+    depends_on:
+      - mysql
