@@ -20,7 +20,7 @@ public class MockLocationTask {
     private final Random random = new Random();
     private final String[] patentes = { "ABC-123", "XYZ-789", "JKL-456", "MNO-012" };
 
-    @Scheduled(fixedRate = 45000, initialDelay = 5000)
+    @Scheduled(fixedRate = 60000, initialDelay = 5000)
     public void sendMockLocation() {
         String patente = patentes[random.nextInt(patentes.length)];
         double latitud = -33.4 + (random.nextDouble() * 0.1);

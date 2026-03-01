@@ -59,11 +59,11 @@ public class MonitorServiceImpl implements MonitorService {
     }
 
     @Override
-    @Scheduled(fixedRate = 180000) // 3 minutos
+    @Scheduled(fixedRate = 300000) // 5 minutos
     public void printSummary() {
-        LocalDateTime lastTime = LocalDateTime.now().minusMinutes(3); // Solo traer los de los últimos 3 mins
+        LocalDateTime lastTime = LocalDateTime.now().minusMinutes(5); // Solo traer los de los últimos 5 mins
         List<MonitorRecord> records = repository.findByTimestampAfter(lastTime);
-        System.out.println("--- RESUMEN CONSOLIDADO (ÚLTIMOS 3 MINUTOS) ---");
+        System.out.println("--- RESUMEN CONSOLIDADO (ÚLTIMOS 5 MINUTOS) ---");
 
         java.util.Map<String, java.util.List<MonitorRecord>> grouped = records.stream()
                 .collect(java.util.stream.Collectors.groupingBy(MonitorRecord::getPatente));
