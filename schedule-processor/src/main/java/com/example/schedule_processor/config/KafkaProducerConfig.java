@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
-import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import com.example.schedule_processor.dto.ArrivalSchedule;
@@ -20,31 +19,26 @@ import com.example.schedule_processor.dto.ArrivalSchedule;
 @Configuration
 public class KafkaProducerConfig {
 
-    @Value("${spring.kafka.bootstrap-servers:localhost:29092,localhost:39092,localhost:49092}")
+    @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
     public static final String TOPIC_SCHEDULES = "horarios";
 
     @Bean
-    KafkaAdmin kafkaAdmin() {
-        Map<String, Object> configs = new HashMap<>();
-        configs.put("bootstrap.servers", bootstrapServers);
-        return new KafkaAdmin(configs);
-    }
+    public ProducerFactory<String, ArrivalSchedule> scheduleProducerFactory() {
 
-    @Bean
-    ProducerFactory<String, ArrivalSchedule> scheduleProducerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         configProps.put(ProducerConfig.PARTITIONER_CLASS_CONFIG,
                 "org.apache.kafka.clients.producer.RoundRobinPartitioner");
+
         return new DefaultKafkaProducerFactory<>(configProps);
     }
 
     @Bean
-    KafkaTemplate<String, ArrivalSchedule> scheduleKafkaTemplate() {
+    public KafkaTemplate<String, ArrivalSchedule> scheduleKafkaTemplate() {
         return new KafkaTemplate<>(scheduleProducerFactory());
     }
 
