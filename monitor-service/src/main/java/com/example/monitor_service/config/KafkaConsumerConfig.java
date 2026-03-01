@@ -21,7 +21,7 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 @Configuration
 public class KafkaConsumerConfig {
 
-	@Value("${spring.kafka.bootstrap-servers:localhost:29092,localhost:39092,localhost:49092}")
+	@Value("${spring.kafka.bootstrap-servers}")
 	private String bootstrapServers;
 
 	public static final String GROUP_ID = "monitor-group";

@@ -44,6 +44,6 @@ public class KafkaProducerConfig {
 
     @Bean
     public NewTopic topicHorarios() {
-        return new NewTopic(TOPIC_SCHEDULES, 3, (short) 1);
+        return new NewTopic(TOPIC_SCHEDULES, 3, (short) 2);
     }
 }

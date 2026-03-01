@@ -22,7 +22,7 @@ import com.example.location_producer.dto.LocationRecord;
 @Configuration
 public class KafkaProducerConfig {
 
-	@Value("${spring.kafka.bootstrap-servers:localhost:29092,localhost:39092,localhost:49092}")
+	@Value("${spring.kafka.bootstrap-servers}")
 	private String bootstrapServers;
 
 	public static final String TOPIC = "ubicaciones_vehiculos";
@@ -36,9 +36,7 @@ public class KafkaProducerConfig {
 
 	@Bean
 	NewTopic topicUbicaciones() {
-		Map<String, String> configs = new HashMap<>();
-		configs.put("retention.ms", "43200000");
-		return new NewTopic(TOPIC, 3, (short) 1).configs(configs);
+		return new NewTopic(TOPIC, 3, (short) 2);
 	}
 
 	@Bean

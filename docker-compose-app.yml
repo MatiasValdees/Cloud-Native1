@@ -61,3 +61,4 @@ services:
       SPRING_DATASOURCE_PASSWORD: password
     depends_on:
       - mysql
+  
